@@ -6,9 +6,13 @@ struct ReferenceableArray{T, N, A <: AbstractArray{T, N}} <: AbstractArray{Ref{T
     x::A
 end
 
+parenttype(::Type{<:ReferenceableArray{<:Any, <:Any, A}}) where A = A
+
 struct ReferenceableDict{K, V, A <: AbstractDict{K, V}} <: AbstractDict{K, Ref{V}}
     x::A
 end
+
+parenttype(::Type{<:ReferenceableDict{<:Any, <:Any, A}}) where A = A
 
 struct RefIndexable{inbounds, T, A, I} <: Ref{T}
     x::A
@@ -57,7 +61,8 @@ referenceable(x::AbstractDict) = ReferenceableDict(x)
 
 Base.size(A::ReferenceableArray) = size(A.x)
 Base.axes(A::ReferenceableArray) = axes(A.x)
-Base.IndexStyle(::Type{<: ReferenceableArray{A}}) where {A} = Base.IndexStyle(A)
+Base.IndexStyle(::Type{A}) where {A <: ReferenceableArray} =
+    Base.IndexStyle(parenttype(A))
 
 Base.length(A::ReferenceableDict) = length(A.x)
 Base.iterate(A::ReferenceableDict) = iterate(A.x)

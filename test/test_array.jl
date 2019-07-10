@@ -15,4 +15,13 @@ using Test
     @test x[1, 2] == 30
 end
 
+@testset "eachindex" begin
+    @testset for x in [
+        ones(3),
+        ones(2, 2),
+    ]
+        @test eachindex(x) == eachindex(x, referenceable(x))
+    end
+end
+
 end  # module
