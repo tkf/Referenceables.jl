@@ -1,5 +1,15 @@
 module Referenceables
 
+# Use markdown files as the docstring:
+for (name, path) in [
+    :Referenceables => joinpath(dirname(@__DIR__), "README.md"),
+    :referenceable => joinpath(@__DIR__, "referenceable.md"),
+]
+    include_dependency(path)
+    str = replace(read(path, String), "```julia" => "```jldoctest $name")
+    @eval @doc $str $name
+end
+
 export referenceable
 
 struct ReferenceableArray{T, N, A <: AbstractArray{T, N}} <: AbstractArray{Ref{T}, N}
