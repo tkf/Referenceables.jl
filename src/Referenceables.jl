@@ -58,4 +58,8 @@ referenceable(x::AbstractDict) = ReferenceableDict(x)
 Base.size(A::ReferenceableArray) = size(A.x)
 Base.IndexStyle(::Type{<: ReferenceableArray{A}}) where {A} = Base.IndexStyle(A)
 
+Base.length(A::ReferenceableDict) = length(A.x)
+Base.iterate(A::ReferenceableDict) = iterate(A.x)
+Base.iterate(A::ReferenceableDict, state) = iterate(A.x, state)
+
 end # module
