@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Home · Referenceables.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>Referenceables.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Home</a><ul class="internal"></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Home</a></li></ul><a class="edit-page" href="https://github.com/tkf/Referenceables.jl/blob/master/docs/src/index.md#L"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Home</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Referenceables.jl-1" href="#Referenceables.jl-1">Referenceables.jl</a></h1><ul><li><a href="#Referenceables.Referenceables"><code>Referenceables.Referenceables</code></a></li><li><a href="#Referenceables.referenceable"><code>Referenceables.referenceable</code></a></li></ul><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Referenceables.Referenceables" href="#Referenceables.Referenceables"><code>Referenceables.Referenceables</code></a> — <span class="docstring-category">Module</span>.</div><div><div><p><strong>Referenceables</strong></p><p><a href="https://tkf.github.io/Referenceables.jl/stable"><img src="https://img.shields.io/badge/docs-stable-blue.svg" alt="Stable"/></a> <a href="https://tkf.github.io/Referenceables.jl/dev"><img src="https://img.shields.io/badge/docs-dev-blue.svg" alt="Dev"/></a> <a href="https://travis-ci.com/tkf/Referenceables.jl"><img src="https://travis-ci.com/tkf/Referenceables.jl.svg?branch=master" alt="Build Status"/></a> <a href="https://codecov.io/gh/tkf/Referenceables.jl"><img src="https://codecov.io/gh/tkf/Referenceables.jl/branch/master/graph/badge.svg" alt="Codecov"/></a> <a href="https://coveralls.io/github/tkf/Referenceables.jl?branch=master"><img src="https://coveralls.io/repos/github/tkf/Referenceables.jl/badge.svg?branch=master" alt="Coveralls"/></a></p><p>Referenceables.jl provides an interface for readable and writable reference to an element of an array or dictionary.  The entry point function is <code>referenceable</code>.  Wrapping a container <code>x</code> yields a new view <code>y = referenceable(x)</code> to <code>x</code> where indexing to it yields a reference <code>r = y[i]</code>.  This reference can be used to read <code>value = r[]</code> or write <code>r[] = value</code> a value.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; using Referenceables
+
+julia&gt; x = collect(reshape(1:6, (2, 3)))
+       y = referenceable(x);
+
+julia&gt; r = y[1] :: Ref
+↪1
+
+julia&gt; r[] = 100;
+
+julia&gt; x
+2×3 Array{Int64,2}:
+ 100  3  5
+   2  4  6</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/tkf/Referenceables.jl/blob/5922274e42d49824aed66a679ebf969b0873a6f0/src/Referenceables.jl#LL10-L44">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Referenceables.referenceable" href="#Referenceables.referenceable"><code>Referenceables.referenceable</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">referenceable(x::AbstractArray{T}) :: AbstractArray{&lt;:Ref{T}}
+referenceable(x::AbstractDict{K, V}) :: AbstractDict{K, &lt;:Ref{V}}</code></pre><p><code>referenceable(x)</code> converts a collection <code>x</code> to a wrapped container where indexing to it produces a reference, not the value.</p><pre><code class="language-julia-repl">julia&gt; using Referenceables
+
+julia&gt; x = collect(reshape(1:6, (2, 3)))
+       y = referenceable(x);
+
+julia&gt; r = y[1] :: Ref
+↪1
+
+julia&gt; r[] = 100;
+
+julia&gt; x
+2×3 Array{Int64,2}:
+ 100  3  5
+   2  4  6</code></pre><div class="admonition warning"><div class="admonition-title">Warning</div><div class="admonition-text"><p>Inbound check is done when indexing the <code>referenceable(x)</code> container, <em>not</em> during de-referencing <code>r[]</code>.  It means that passing the reference <code>r</code> to unknown code can result in a segmentation fault if the original container <code>x</code> is mutated afterwards.</p></div></div><p><code>referenceable</code> works with dictionaries as well:</p><pre><code class="language-julia-repl">julia&gt; x = Dict()
+       y = referenceable(x);
+
+julia&gt; r = y[1] :: Ref
+       r[] = 100;
+
+julia&gt; x
+Dict{Any,Any} with 1 entry:
+  1 =&gt; 100</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/tkf/Referenceables.jl/blob/5922274e42d49824aed66a679ebf969b0873a6f0/src/Referenceables.jl#LL10-L55">source</a></section><footer><hr/></footer></article></body></html>
