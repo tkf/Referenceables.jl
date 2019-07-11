@@ -24,6 +24,11 @@ end
 
 parenttype(::Type{<:ReferenceableDict{<:Any, <:Any, A}}) where A = A
 
+"""
+    RefIndexable{inbounds}(x, i::Tuple) where {inbounds isa Bool} <: Ref{valtype(x)}
+
+Like `Base.RefArray`, but works with arbitrary containers and indices.
+"""
 struct RefIndexable{inbounds, T, A, I} <: Ref{T}
     x::A
     i::I
