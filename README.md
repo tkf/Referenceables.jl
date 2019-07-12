@@ -21,7 +21,7 @@ julia> using Referenceables
 julia> x = collect(reshape(1:6, (2, 3)))
        y = referenceable(x);
 
-julia> r = y[1] :: Ref
+julia> r = y[1, 1] :: Ref
 ↪1
 
 julia> r[] = 100;
