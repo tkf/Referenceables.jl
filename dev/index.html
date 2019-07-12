@@ -12,7 +12,7 @@ julia&gt; r[] = 100;
 julia&gt; x
 2×3 Array{Int64,2}:
  100  3  5
-   2  4  6</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/tkf/Referenceables.jl/blob/e858f372a31d00f6b9ab420b3a8df56dea092aa9/src/Referenceables.jl#LL10-L44">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Referenceables.referenceable" href="#Referenceables.referenceable"><code>Referenceables.referenceable</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">referenceable(x::AbstractArray{T}) :: AbstractArray{&lt;:Ref{T}}
+   2  4  6</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/tkf/Referenceables.jl/blob/be69f0ad812197e197b920db9556a5cb41f74f17/src/Referenceables.jl#LL10-L44">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Referenceables.referenceable" href="#Referenceables.referenceable"><code>Referenceables.referenceable</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">referenceable(x::AbstractArray{T}) :: AbstractArray{&lt;:Ref{T}}
 referenceable(x::AbstractDict{K, V}) :: AbstractDict{K, &lt;:Ref{V}}</code></pre><p><code>referenceable(x)</code> converts a collection <code>x</code> to a wrapped container where indexing to it produces a reference, not the value.</p><pre><code class="language-julia-repl">julia&gt; using Referenceables
 
 julia&gt; x = collect(reshape(1:6, (2, 3)))
@@ -34,4 +34,4 @@ julia&gt; r = y[1] :: Ref
 
 julia&gt; x
 Dict{Any,Any} with 1 entry:
-  1 =&gt; 100</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/tkf/Referenceables.jl/blob/e858f372a31d00f6b9ab420b3a8df56dea092aa9/src/Referenceables.jl#LL10-L55">source</a></section><footer><hr/><a class="next" href="internals/"><span class="direction">Next</span><span class="title">Internals</span></a></footer></article></body></html>
+  1 =&gt; 100</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/tkf/Referenceables.jl/blob/be69f0ad812197e197b920db9556a5cb41f74f17/src/Referenceables.jl#LL10-L55">source</a></section><footer><hr/><a class="next" href="internals/"><span class="direction">Next</span><span class="title">Internals</span></a></footer></article></body></html>
