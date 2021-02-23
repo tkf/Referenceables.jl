@@ -1,5 +1,9 @@
 module Referenceables
 
+export referenceable
+
+import Adapt
+
 # Use markdown files as the docstring:
 for (name, path) in [
     :Referenceables => joinpath(dirname(@__DIR__), "README.md"),
@@ -10,18 +14,18 @@ for (name, path) in [
     @eval @doc $str $name
 end
 
-export referenceable
-
 struct ReferenceableArray{T, N, A <: AbstractArray{T, N}} <: AbstractArray{Ref{T}, N}
     x::A
 end
 
+Base.parent(x::ReferenceableArray) = x.x
 parenttype(::Type{<:ReferenceableArray{<:Any, <:Any, A}}) where A = A
 
 struct ReferenceableDict{K, V, A <: AbstractDict{K, V}} <: AbstractDict{K, Ref{V}}
     x::A
 end
 
+Base.parent(x::ReferenceableDict) = x.x
 parenttype(::Type{<:ReferenceableDict{<:Any, <:Any, A}}) where A = A
 
 """
@@ -82,5 +86,7 @@ Base.IndexStyle(::Type{A}) where {A <: ReferenceableArray} =
 Base.length(A::ReferenceableDict) = length(A.x)
 Base.iterate(A::ReferenceableDict) = iterate(A.x)
 Base.iterate(A::ReferenceableDict, state) = iterate(A.x, state)
+
+Adapt.adapt_structure(to, x::Referenceable) = referenceable(Adapt.adapt(to, parent(x)))
 
 end # module
