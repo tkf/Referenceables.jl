@@ -41,9 +41,14 @@ Base.parent(x::ReferenceableDict) = x.x
 parenttype(::Type{<:ReferenceableDict{<:Any, <:Any, A}}) where A = A
 
 RefIndexable{inbounds}(x, i) where {inbounds} =
-    RefIndexable{inbounds, eltype(x), typeof(x), typeof(i)}(x, i)
+    RefIndexable{inbounds, _valtype(x), typeof(x), typeof(i)}(x, i)
 
 RefIndexable(x, i) = RefIndexable{false}(x, i)
+
+RefIndexable{inbounds}(x, i, ::Type{K}) where {inbounds, K} =
+    RefIndexable{inbounds, _valtype(x), typeof(x), K}(x, i)
+
+RefIndexable(x, i, ::Type{K}) where {K} = RefIndexable{false}(x, i, K)
 
 Base.show(io::IO, x::RefIndexable) =
     if get(io, :limit, false)
@@ -73,8 +78,8 @@ const Referenceable = Union{ReferenceableArray, ReferenceableDict}
     return RefIndexable{true}(x.x, i)
 end
 
-@inline function Base.getindex(x::ReferenceableDict, i...)
-    return RefIndexable(x.x, i...)
+@inline function Base.getindex(x::ReferenceableDict{K}, i) where {K}
+    return RefIndexable(x.x, convert(K, i), K)
 end
 
 referenceable(x::AbstractArray) = ReferenceableArray(x)
