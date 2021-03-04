@@ -14,29 +14,31 @@ for (name, path) in [
     @eval @doc $str $name
 end
 
-struct ReferenceableArray{T, N, A <: AbstractArray{T, N}} <: AbstractArray{Ref{T}, N}
+"""
+    RefIndexable{inbounds}(x, i::Tuple) where {inbounds isa Bool} <: Ref{valtype(x)}
+
+Like `Base.RefArray`, but works with arbitrary containers and indices.
+"""
+struct RefIndexable{inbounds,T,A,I} <: Ref{T}
+    x::A
+    i::I
+end
+
+struct ReferenceableArray{T,N,A<:AbstractArray{T,N}} <:
+       AbstractArray{RefIndexable{inbounds,T,A} where inbounds,N}
     x::A
 end
 
 Base.parent(x::ReferenceableArray) = x.x
 parenttype(::Type{<:ReferenceableArray{<:Any, <:Any, A}}) where A = A
 
-struct ReferenceableDict{K, V, A <: AbstractDict{K, V}} <: AbstractDict{K, Ref{V}}
+struct ReferenceableDict{K,V,A<:AbstractDict{K,V}} <:
+       AbstractDict{K,RefIndexable{false,V,A,K}}
     x::A
 end
 
 Base.parent(x::ReferenceableDict) = x.x
 parenttype(::Type{<:ReferenceableDict{<:Any, <:Any, A}}) where A = A
-
-"""
-    RefIndexable{inbounds}(x, i::Tuple) where {inbounds isa Bool} <: Ref{valtype(x)}
-
-Like `Base.RefArray`, but works with arbitrary containers and indices.
-"""
-struct RefIndexable{inbounds, T, A, I} <: Ref{T}
-    x::A
-    i::I
-end
 
 RefIndexable{inbounds}(x, i) where {inbounds} =
     RefIndexable{inbounds, eltype(x), typeof(x), typeof(i)}(x, i)
@@ -86,6 +88,10 @@ Base.IndexStyle(::Type{A}) where {A <: ReferenceableArray} =
 Base.length(A::ReferenceableDict) = length(A.x)
 Base.iterate(A::ReferenceableDict) = iterate(A.x)
 Base.iterate(A::ReferenceableDict, state) = iterate(A.x, state)
+
+isreferenceable(xs) = _valtype(xs) <: RefIndexable
+_valtype(xs) = valtype(xs)
+_valtype(xs::AbstractArray) = eltype(xs)  # for old Julia
 
 Adapt.adapt_structure(to, x::Referenceable) = referenceable(Adapt.adapt(to, parent(x)))
 
