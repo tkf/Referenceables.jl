@@ -1,6 +1,7 @@
 module TestArray
 
 using Referenceables
+using Referenceables: isreferenceable
 using Test
 
 @testset begin
@@ -22,6 +23,16 @@ end
     ]
         @test eachindex(x) == eachindex(x, referenceable(x))
     end
+end
+
+@testset "isreferenceable" begin
+    x = collect(reshape(1:6, (2, 3)))
+    @test isreferenceable(referenceable(x))
+    @test isreferenceable(collect(referenceable(x)))
+    @test isreferenceable(view(referenceable(x), 1:1, 1:2))
+    @test isreferenceable(view(referenceable(x), 1:1))
+    @test !isreferenceable(x)
+    @test !isreferenceable(1:1)
 end
 
 end  # module
