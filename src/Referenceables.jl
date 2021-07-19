@@ -71,6 +71,11 @@ Base.show(io::IO, x::RefIndexable) =
         x.x[x.i...] = value
     end
 
+@inline Base.pointer(ref::RefIndexable) = pointer(ref.x, LinearIndices(ref.x)[ref.i...])
+
+@inline Base.unsafe_convert(::Ptr{T}, ref::RefIndexable{inbounds,T}) where {inbounds,T} =
+    pointer(ref)
+
 const Referenceable = Union{ReferenceableArray, ReferenceableDict}
 
 @inline function Base.getindex(x::ReferenceableArray, i::Int...)
